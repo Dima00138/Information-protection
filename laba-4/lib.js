@@ -1,16 +1,14 @@
 
 function insertInfoWordToMatrix(infoWord, k1, k2, z) {
-    const k = Math.ceil(infoWord.length/k1);
-    const matrix = Array(k).fill().map(() => Array(k2+1).fill().map(() => Array(z+1).fill(0)));
+    const rows = Math.ceil(infoWord.length / k1);
+    const columns = k2 + 1;
 
-    for (let i = 0; i < k1-1; i++) {
-        console.log("Row " + (i + 1) + ":");
-        for (let j = 0; j < k2-1; j++) {
-            if (infoWord[i+j] === undefined) return    
-            matrix[i][j][0] = infoWord[i+j];
-            console.log(" Column " + (j + 1) + ":");
-            for (let k = 0; k < z; k++) {
-                console.log("    Dimension " + (k + 1) + ": " + matrix[i][j][k]);
+    const matrix = Array(rows).fill().map(() => Array(columns).fill().map(() => Array(z+1).fill(0)));
+
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+            if (i * k1 + j < infoWord.length) {
+                matrix[i][j][0] = infoWord[i * k1 + j];
             }
         }
     }
@@ -18,75 +16,164 @@ function insertInfoWordToMatrix(infoWord, k1, k2, z) {
     return matrix;
 }
 
-function calculateParityBits(infoWord, matrix) {
-    matrix[0][1] = infoWord[0] ^ infoWord[1] ^ infoWord[2] ^ infoWord[3];
-    matrix[1][1] = infoWord[4] ^ infoWord[5] ^ infoWord[6] ^ infoWord[7];
+function calculateParityBits(matrix) {
+    const rows = matrix.length;
+    const columns = matrix[0].length;
+    const z = matrix[0][0].length;
 
-    matrix[0][2] = infoWord[0] ^ infoWord[1] ^ infoWord[4] ^ infoWord[5];
-    matrix[1][2] = infoWord[2] ^ infoWord[3] ^ infoWord[6] ^ infoWord[7];
+    const horizontalParity = Array(rows).fill(0);
+    const verticalParity = Array(columns).fill(0);
+    const diagonalParityTopLeftToBottomRight = Array(Math.min(rows, columns)).fill(0);
+    const diagonalParityBottomLeftToTopRight = Array(Math.min(rows, columns)).fill(0);
+
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+            for (let k = 0; k < z; k++) {
+                horizontalParity[i] ^= matrix[i][j][k];
+            }
+        }
+    }
+
+    for (let j = 0; j < columns; j++) {
+        for (let i = 0; i < rows; i++) {
+            for (let k = 0; k < z; k++) {
+                verticalParity[j] ^= matrix[i][j][k];
+            }
+        }
+    }
+
+    for (let i = 0; i < Math.min(rows, columns); i++) {
+        for (let k = 0; k < z; k++) {
+            diagonalParityTopLeftToBottomRight[i] ^= matrix[i][i][k];
+        }
+    }
+
+    for (let i = 0; i < Math.min(rows, columns); i++) {
+        for (let k = 0; k < z; k++) {
+            diagonalParityBottomLeftToTopRight[i] ^= matrix[rows - 1 - i][i][k];
+        }
+    }
+
+    return {
+        horizontalParity,
+        verticalParity,
+        diagonalParityTopLeftToBottomRight,
+        diagonalParityBottomLeftToTopRight
+    };
 }
 
-function generateCodeWord(infoWord, matrix) {
+function generateCodeWord(infoWord) {
     const codeWord = [...infoWord];
-    for (let i = 1; i < matrix[0].length; i++) {
-        codeWord.push(matrix[0][i]);
-    }
-    for (let i = 1; i < matrix[1].length; i++) {
-        codeWord.push(matrix[1][i]);
-    }
+    parityBits.horizontalParity.forEach((el) => {
+        codeWord.push(el);
+    })
+    parityBits.verticalParity.forEach((el) => {
+        codeWord.push(el);
+    })
+    parityBits.diagonalParityTopLeftToBottomRight.forEach((el) => {
+        codeWord.push(el);
+    })
+    parityBits.diagonalParityBottomLeftToTopRight.forEach((el) => {
+        codeWord.push(el);
+    })
     return codeWord;
 }
 
 function generateError(codeWord, errorCount) {
     const erroneousCodeWord = [...codeWord];
+
+    errorCount = Math.min(errorCount, erroneousCodeWord.length);
+
     for (let i = 0; i < errorCount; i++) {
-        const randomIndex = Math.floor(Math.random() * erroneousCodeWord.length);
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * erroneousCodeWord.length);
+        } while (erroneousCodeWord[randomIndex] === undefined);
+
         erroneousCodeWord[randomIndex] = 1 - erroneousCodeWord[randomIndex];
     }
+
     return erroneousCodeWord;
 }
 
-function detectAndCorrectErrors(erroneousCodeWord, matrix) {
-    const correctedCodeWord = [...erroneousCodeWord];
+function correctErrors(Y_n, parityBits) {
+    const correctedCodeWord = [...Y_n];
 
-    const parityBit1 = (erroneousCodeWord[8] ^ erroneousCodeWord[9] ^ erroneousCodeWord[10] ^ erroneousCodeWord[11]) === matrix[0][1];
-    const parityBit2 = (erroneousCodeWord[12] ^ erroneousCodeWord[13] ^ erroneousCodeWord[14] ^ erroneousCodeWord[15]) === matrix[1][1];
+    const parityPositions = {
+        diagonalParityBottomLeftToTopRight: Y_n.length - parityBits.diagonalParityBottomLeftToTopRight.length,
+        diagonalParityTopLeftToBottomRight: Y_n.length - parityBits.diagonalParityBottomLeftToTopRight.length - parityBits.diagonalParityTopLeftToBottomRight.length,
+        verticalParity: Y_n.length - parityBits.diagonalParityBottomLeftToTopRight.length - parityBits.diagonalParityTopLeftToBottomRight.length - parityBits.verticalParity.length,
+        horizontalParity: Y_n.length - parityBits.diagonalParityBottomLeftToTopRight.length - parityBits.diagonalParityTopLeftToBottomRight.length - parityBits.verticalParity.length - parityBits.horizontalParity.length
+    };
 
-    if (!parityBit1) {
-        correctedCodeWord[8] = 1 - correctedCodeWord[8];
-    }
-    if (!parityBit2) {
-        correctedCodeWord[12] = 1 - correctedCodeWord[12];
-    }
 
+    
+    Object.keys(parityBits).forEach(parityType => {
+        const expectedParityBits = parityBits[parityType];
+        const receivedParityBits = correctedCodeWord.slice(parityPositions[parityType], parityPositions[parityType] + expectedParityBits.length);
+        console.log(`Expected parity bits ${parityType}, ${parityPositions[parityType] + expectedParityBits.length}`, expectedParityBits);
+        console.log("Received parity bits", receivedParityBits);
+
+        expectedParityBits.forEach((expectedBit, index) => {
+            if (expectedBit !== receivedParityBits[index]) {
+                correctedCodeWord[parityPositions[parityType] + index] = expectedBit;
+            }
+        });
+    });
+    
     return correctedCodeWord;
 }
 
-function analyzeCorrectionCapability(infoWord, correctedCodeWord) {
-    const originalInfoWord = infoWord.slice(0, 8);
-    const correctedInfoWord = correctedCodeWord.slice(0, 8);
+function analyzeCorrectionCapability(X_n, Errors, generateError, correctErrors, N1) {
+    let N2 = 0; // Все найдены
+    let N3 = 0; // Все исправлены
 
-    const isCorrected = originalInfoWord.every((bit, index) => bit === correctedInfoWord[index]);
+    for (let i = 0; i < N1; i++) {
+        const erroneousCodeWord = generateError(X_n, Errors);
+        //console.log(X_n, erroneousCodeWord);
+        const correctedCodeWord = correctErrors(erroneousCodeWord, parityBits);
+        //console.log(erroneousCodeWord);
+        //console.log(correctedCodeWord);
 
-    if (isCorrected) {
-        console.log("Код успешно скорректирован.");
-    } else {
-        console.log("Ошибка при коррекции кода.");
+        if (countErrors(erroneousCodeWord, X_n) === Errors) {
+            N2++;
+            if (countErrors(correctedCodeWord, X_n) === 0) {
+                N3++;
+            }
+        }
     }
+
+    const ratioN2N1 = N2 / N1;
+    const ratioN3N1 = N3 / N1;
+
+    return { ratioN2N1, ratioN3N1 };
+}
+
+function countErrors(word1, word2) {
+    let errorCount = 0;
+    for (let i = 0; i < word1.length; i++) {
+        if (word1[i] !== word2[i]) {
+            errorCount++;
+        }
+    }
+    return errorCount;
 }
 
 const infoWord = [1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0];
 const k1 = 2, k2 = 4, z = 2;
+const dMin = k1 + k2 + z + 1;
+const N1 = 5;
 let matrix = insertInfoWordToMatrix(infoWord, k1, k2, z);
 
-calculateParityBits(infoWord, matrix);
+const parityBits = calculateParityBits(matrix);
+console.log(`parity bits`, parityBits);
 
-const codeWord = generateCodeWord(infoWord, matrix);
+const codeWord = generateCodeWord(infoWord);
 
 const errorCount = 3;
-const erroneousCodeWord = generateError(codeWord, errorCount);
-matrix.forEach(row => console.log(row.join(' ')));
+//const erroneousCodeWord = generateError(codeWord, errorCount);
+//matrix.forEach(row => console.log(row.join(' ')));
 
-const correctedCodeWord = detectAndCorrectErrors(erroneousCodeWord, matrix);
+//const correctedCodeWord = correctErrors(erroneousCodeWord, parityBits);
 
-analyzeCorrectionCapability(infoWord, correctedCodeWord);
+console.log(analyzeCorrectionCapability(codeWord, errorCount, generateError, correctErrors, N1));
