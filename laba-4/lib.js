@@ -162,7 +162,7 @@ function countErrors(word1, word2) {
 const infoWord = [1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0];
 const k1 = 2, k2 = 4, z = 2;
 const dMin = k1 + k2 + z + 1;
-const N1 = 5;
+const N1 = 1;
 let matrix = insertInfoWordToMatrix(infoWord, k1, k2, z);
 
 const parityBits = calculateParityBits(matrix);
@@ -170,7 +170,7 @@ console.log(`parity bits`, parityBits);
 
 const codeWord = generateCodeWord(infoWord);
 
-const errorCount = 3;
+const errorCount = 2;
 //const erroneousCodeWord = generateError(codeWord, errorCount);
 //matrix.forEach(row => console.log(row.join(' ')));
 
