@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/node": "^20.12.2",
     "plotly": "^1.0.6"
   }
 }
