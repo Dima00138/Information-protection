@@ -308,7 +308,7 @@ async function main() {
   console.log("\nСтрока с ошибками: ");
   console.log(masN.join(" "));
   reInterleaving(masN, k);
-  console.log("\nСтрока после re:перемежения: ");
+  console.log("\nСтрока после деперемежения: ");
   console.log(masN.join(" "));
   searchErrorLong(masN, checkM, k);
   console.log("\n\nСтрока после исправления ошибок: ");
