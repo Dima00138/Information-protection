@@ -1,0 +1,15 @@
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\bin\Debug\net8.0\laba-10.exe
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\bin\Debug\net8.0\laba-10.deps.json
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\bin\Debug\net8.0\laba-10.runtimeconfig.json
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\bin\Debug\net8.0\laba-10.dll
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\bin\Debug\net8.0\laba-10.pdb
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\laba-10.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\laba-10.AssemblyInfoInputs.cache
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\laba-10.AssemblyInfo.cs
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\laba-10.csproj.CoreCompileInputs.cache
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\laba-10.sourcelink.json
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\laba-10.dll
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\refint\laba-10.dll
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\laba-10.pdb
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\laba-10.genruntimeconfig.cache
+C:\Users\Dima00138\Documents\ПОИБМС-7\Защита информации\laba-10\obj\Debug\net8.0\ref\laba-10.dll
